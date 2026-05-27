@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { setAccessToken } from "../../lib/axios";
 import { api } from "../../lib/axios";
-
+import { setAccessToken } from "../../lib/axios";
 interface AuthState {
   accessToken: string | null;
   loading: boolean;
@@ -29,6 +28,7 @@ export const register = createAsyncThunk(
   "auth/register",
   async (userData: RegisterData) => {
     const { data } = await api.post("/auth/register", userData);
+
     return data;
   },
 );
@@ -40,8 +40,7 @@ export const login = createAsyncThunk(
       "/auth/login",
       userData,
     );
-    setAccessToken(data.accessToken);
-    console.log(data.accessToken);
+
     return data;
   },
 );
@@ -49,33 +48,43 @@ export const login = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState,
+
   reducers: {
     logout: (state) => {
       state.accessToken = null;
       state.error = null;
-      localStorage.removeItem("accessToken");
     },
   },
+
   extraReducers: (builder) => {
     builder
+
+      // REGISTER
       .addCase(register.pending, (state) => {
         state.loading = true;
       })
+
       .addCase(register.fulfilled, (state) => {
         state.loading = false;
       })
+
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message ?? "Registration failed";
       })
-      //Login
+
+      // LOGIN
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
+
       .addCase(login.fulfilled, (state, action) => {
         state.loading = false;
+
         state.accessToken = action.payload.accessToken;
+
+        setAccessToken(action.payload.accessToken);
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
@@ -85,4 +94,5 @@ const authSlice = createSlice({
 });
 
 export const { logout } = authSlice.actions;
+
 export default authSlice.reducer;

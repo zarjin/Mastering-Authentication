@@ -22,7 +22,7 @@ export default function Login() {
   return (
     <div className="w-full min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-96 border border-gray-200 rounded-lg bg-white p-6 shadow-sm">
-        <h1 className="text-2xl font-semibold text-center mb-6">Register</h1>
+        <h1 className="text-2xl font-semibold text-center mb-6">Login</h1>
 
         <form onSubmit={submitForm} className="space-y-5">
           {/* Email */}
