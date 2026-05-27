@@ -1,5 +1,7 @@
+import type mongoose from "mongoose";
+
 export interface IPayload {
-  id: string;
+  id: mongoose.Types.ObjectId;
   email: string;
 }
 
@@ -8,3 +10,4 @@ export interface IUser {
   email: string;
   password: string;
 }
+

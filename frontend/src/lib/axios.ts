@@ -1,15 +1,20 @@
 import axios from "axios";
-import { store } from "../redux/store";
+
+let accessToken: string | null = null;
+
+export const setAccessToken = (token: string | null) => {
+  accessToken = token;
+};
 
 export const api = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: "http://localhost:3000/api/v1",
   withCredentials: true,
 });
 
 api.interceptors.request.use((config) => {
-  const token = store.getState().auth.accessToken;
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
   }
+
   return config;
 });
