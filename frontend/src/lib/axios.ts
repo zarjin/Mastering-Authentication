@@ -18,3 +18,28 @@ api.interceptors.request.use((config) => {
 
   return config;
 });
+
+api.interceptors.response.use(
+  (response) => response,
+
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      try {
+        const response = await api.post("/refresh-token");
+
+        const newAccessToken = response.data.accessToken;
+
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+        return api(originalRequest);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    return Promise.reject(error);
+  },
+);

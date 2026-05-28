@@ -5,6 +5,7 @@ import { comparePassword, hashingPassword } from "../utils/bcrypt.util.ts";
 import {
   generateAccessToken,
   generateRefreshToken,
+  verifyToken,
 } from "../utils/jwt.util.ts";
 
 export const register = async (req: Request, res: Response) => {
@@ -37,7 +38,7 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { fullname, email, password } = req.body;
+    const { email, password } = req.body;
     if (!email || !password) {
       return res.status(409).json({ message: "required all filed " });
     }
@@ -73,5 +74,52 @@ export const login = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "User Login unsuccessfully" });
+  }
+};
+
+export const logout = async (req: Request, res: Response) => {
+  try {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logout successful",
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Logout Error",
+    });
+  }
+};
+
+export const refreshToken = async (req: Request, res: Response) => {
+  try {
+    const token = req.cookies.refreshToken;
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "No Refresh Token",
+      });
+    }
+    const decoded = verifyToken(token) as IPayload;
+    const payload: IPayload = {
+      id: decoded.id,
+      email: decoded.email,
+    };
+    const newAccessToken = generateAccessToken(payload);
+    return res.status(200).json({ accessToken: newAccessToken });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "Refresh Token Error",
+    });
   }
 };
