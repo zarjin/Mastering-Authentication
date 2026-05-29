@@ -19,7 +19,7 @@ type LoginData = {
 };
 
 const initialState: AuthState = {
-  accessToken: null,
+  accessToken: localStorage.getItem("accessToken"),
   loading: false,
   error: null,
 };
@@ -96,6 +96,23 @@ const authSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message ?? "Login failed";
+      })
+
+      // LOGOUT
+      .addCase(Logout.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(Logout.fulfilled, (state) => {
+        state.loading = false;
+        state.accessToken = null;
+        setAccessToken(null);
+      })
+      .addCase(Logout.rejected, (state, action) => {
+        state.loading = false;
+        state.accessToken = null;
+        setAccessToken(null);
+        state.error = action.error.message ?? "Logout failed";
       });
   },
 });

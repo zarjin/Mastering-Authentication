@@ -1,12 +1,11 @@
-import { useState } from "react";
-import { useAppDispatch } from "../redux/typesHooks";
+import { useAppDispatch, useAppSelector } from "../redux/typesHooks";
 import { Logout } from "../redux/features/authSlice";
 import { Link } from "react-router";
 
 const Navbar = () => {
   const dispatch = useAppDispatch();
-
-  const [isLogin, setIsLogin] = useState(true);
+  const { accessToken } = useAppSelector((state) => state.auth);
+  const isLogin = !!accessToken;
 
   const logout = () => {
     dispatch(Logout());

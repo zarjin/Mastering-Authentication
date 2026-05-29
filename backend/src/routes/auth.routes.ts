@@ -12,4 +12,5 @@ export const authRoutes = express.Router();
 authRoutes.post("/register", register);
 authRoutes.post("/login", login);
 authRoutes.post("/logout", isAuthenticated, logout);
-authRoutes.post("/refresh-token", isAuthenticated, refreshToken);
+authRoutes.post("/refresh-token", refreshToken);
+
