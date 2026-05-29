@@ -45,6 +45,12 @@ export const login = createAsyncThunk(
   },
 );
 
+export const Logout = createAsyncThunk("auth/logout", async () => {
+  const { data } = await api.post("/auth/logout", {});
+
+  return data;
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -53,6 +59,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.accessToken = null;
       state.error = null;
+      setAccessToken(null);
     },
   },
 

@@ -5,7 +5,7 @@ import { comparePassword, hashingPassword } from "../utils/bcrypt.util.ts";
 import {
   generateAccessToken,
   generateRefreshToken,
-  verifyToken,
+  verifyRefreshToken,
 } from "../utils/jwt.util.ts";
 
 export const register = async (req: Request, res: Response) => {
@@ -64,7 +64,7 @@ export const login = async (req: Request, res: Response) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "none",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
@@ -81,7 +81,7 @@ export const logout = async (req: Request, res: Response) => {
   try {
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "none",
     });
 
@@ -108,7 +108,7 @@ export const refreshToken = async (req: Request, res: Response) => {
         message: "No Refresh Token",
       });
     }
-    const decoded = verifyToken(token) as IPayload;
+    const decoded = verifyRefreshToken(token) as IPayload;
     const payload: IPayload = {
       id: decoded.id,
       email: decoded.email,

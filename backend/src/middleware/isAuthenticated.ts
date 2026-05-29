@@ -1,4 +1,4 @@
-import { verifyToken } from "../utils/jwt.util";
+import { verifyAccessToken } from "../utils/jwt.util.ts";
 import type { Request, Response, NextFunction } from "express";
 import type { IPayload } from "../types/types";
 
@@ -14,7 +14,7 @@ export const isAuthenticated = (
         message: "token is not found",
       });
     }
-    const decoded = verifyToken(token) as IPayload;
+    const decoded = verifyAccessToken(token) as IPayload;
     req.user = decoded;
     next();
   } catch (error) {

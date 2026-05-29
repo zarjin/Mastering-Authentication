@@ -19,7 +19,6 @@ export default function Register() {
   const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch(register(userData));
-    console.log(userData);
   };
 
   return (

@@ -13,6 +13,10 @@ export const generateRefreshToken = (payload: IPayload) => {
   });
 };
 
-export const verifyToken = (token: string) => {
+export const verifyAccessToken = (token: string) => {
+  return JWT.verify(token, process.env.ACCESS_TOKEN_SECRET as string);
+};
+
+export const verifyRefreshToken = (token: string) => {
   return JWT.verify(token, process.env.REFRESH_TOKEN_SECRET as string);
 };
