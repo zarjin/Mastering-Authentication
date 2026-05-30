@@ -3,7 +3,7 @@ import type { IPayload } from "../types/types";
 
 export const generateAccessToken = (payload: IPayload) => {
   return JWT.sign(payload, process.env.ACCESS_TOKEN_SECRET as string, {
-    expiresIn: "15m",
+    expiresIn: "1m",
   });
 };
 

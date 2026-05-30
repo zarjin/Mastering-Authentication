@@ -8,17 +8,24 @@ export const isAuthenticated = (
   next: NextFunction,
 ) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1] as string;
-    if (!token) {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader?.startsWith("Bearer ")) {
       return res.status(401).json({
-        message: "token is not found",
+        message: "Token not found",
       });
     }
+
+    const token = authHeader.split(" ")[1] as string;
+
     const decoded = verifyAccessToken(token) as IPayload;
+
     req.user = decoded;
+
     next();
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "user is not authenticated" });
+    return res.status(401).json({
+      message: "Access token expired",
+    });
   }
 };

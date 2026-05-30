@@ -64,8 +64,8 @@ export const login = async (req: Request, res: Response) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
     return res.status(200).json({
@@ -81,8 +81,8 @@ export const logout = async (req: Request, res: Response) => {
   try {
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     });
 
     return res.status(200).json({
@@ -101,7 +101,11 @@ export const logout = async (req: Request, res: Response) => {
 
 export const refreshToken = async (req: Request, res: Response) => {
   try {
+    console.log("Cookies:", req.cookies);
+
     const token = req.cookies.refreshToken;
+
+    console.log("Refresh Token:", token);
     if (!token) {
       return res.status(401).json({
         success: false,
@@ -116,10 +120,10 @@ export const refreshToken = async (req: Request, res: Response) => {
     const newAccessToken = generateAccessToken(payload);
     return res.status(200).json({ accessToken: newAccessToken });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({
+    console.log("Refresh Token Error:", error);
+    return res.status(401).json({
       success: false,
-      message: "Refresh Token Error",
+      message: "Refresh Token Expired or Invalid",
     });
   }
 };
