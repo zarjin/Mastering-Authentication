@@ -1,26 +1,45 @@
 import axios from "axios";
 
-let accessToken: string | null = localStorage.getItem("accessToken");
+let accessToken: string | null = null;
 
 export const setAccessToken = (token: string | null) => {
   accessToken = token;
 
   if (token) {
     localStorage.setItem("accessToken", token);
+    console.log("Access Token Set:", token);
   } else {
     localStorage.removeItem("accessToken");
   }
 };
 
+export const getAccessToken = () => {
+  if (!accessToken) {
+    accessToken = localStorage.getItem("accessToken");
+  }
+  return accessToken;
+};
+
 export const api = axios.create({
   baseURL: "http://localhost:3000/api/v1",
+  headers: {
+    "Content-Type": "application/json",
+  },
   withCredentials: true,
 });
 
-// REQUEST INTERCEPTOR
+// Initialize token from localStorage on app start
+const storedToken = localStorage.getItem("accessToken");
+if (storedToken) {
+  accessToken = storedToken;
+}
+
 api.interceptors.request.use((config) => {
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`;
+  const token = getAccessToken();
+  if (token) {
+    config.headers = config.headers || {};
+    config.headers.Authorization = `Bearer ${token}`;
+    console.log("Bearer Token Added to Request");
   }
 
   return config;
@@ -33,12 +52,12 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // response না থাকলে crash আটকাবে
+    
     if (!error.response) {
       return Promise.reject(error);
     }
 
-    // refresh-token request এ আবার refresh call আটকাবে
+    
     const isRefreshCall = originalRequest.url?.includes("/auth/refresh-token");
 
     if (
@@ -63,7 +82,7 @@ api.interceptors.response.use(
 
         setAccessToken(null);
 
-        // optional
+       
         window.location.href = "/login";
 
         return Promise.reject(refreshError);

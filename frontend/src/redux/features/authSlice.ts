@@ -19,7 +19,7 @@ type LoginData = {
 };
 
 const initialState: AuthState = {
-  accessToken: localStorage.getItem("accessToken"),
+  accessToken: null,
   loading: false,
   error: null,
 };
@@ -36,7 +36,7 @@ export const register = createAsyncThunk(
 export const login = createAsyncThunk(
   "auth/login",
   async (userData: LoginData) => {
-    const { data } = await api.post<{ accessToken: string }>(
+    const { data } = await api.post(
       "/auth/login",
       userData,
     );
